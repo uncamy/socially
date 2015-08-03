@@ -9,4 +9,5 @@ function($scope, $meteor){
 		$scope.removeAll = function(){
 			$scope.parties.remove();
 	};
+	$scope.parties = $meteor.collection(Parties).subscribe('parties');
 }]);
