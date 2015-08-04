@@ -17,5 +17,6 @@ $scope.party = $meteor.object(Parties, $stateParams.partyId);
 $scope.$meteorSubscribe('parties');
 
 $scope.users = $meteor.collection(Meteor.users, false).subscribe('users');
+$scope.$meteorSubscribe('users');
 
 }]);
