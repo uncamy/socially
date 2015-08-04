@@ -13,7 +13,9 @@ $scope.save = function() {
 $scope.reset = function() {
  	$scope.party.reset();
 };
-$scope.party = $meteor.object(Parties, $stateParams.partyId).subscribe('parties');
+$scope.party = $meteor.object(Parties, $stateParams.partyId);
+$scope.$meteorSubscribe('parties');
+
 $scope.users = $meteor.collection(Meteor.users, false).subscribe('users');
 
 }]);
