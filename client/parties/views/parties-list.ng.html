@@ -1,14 +1,13 @@
-	<form>
-	  <label>Name</label>
-	  <input ng-model="newParty.name">
-	  <label>Description</label>
-	  <input ng-model="newParty.description">
-    <label>Public</label>
-    <input type="checkbox" ng-model="newParty.public">
-	 <button ng-click="newParty.owner=$root.currentUser._id; parties.push(newParty)">Add</button>
-	</form>
-
-  <ul>
+<form>
+  <label>Name</label>
+  <input ng-model="newParty.name">
+  <label>Description</label>
+  <input ng-model="newParty.description">
+  <label>Public</label>
+  <input type="checkbox" ng-model="newParty.public">
+  <button ng-click="newParty.owner=$root.currentUser._id;parties.push(newParty); newParty='';">Add</button>
+</form>
+<ul>
   <h1>Parties:</h1>
   <div>
     <input type="search" ng-model="search" placeholder="Search">
@@ -18,13 +17,38 @@
     </select>
   </div>
   <li dir-paginate="party in parties | itemsPerPage: perPage" total-items="partiesCount.count">
-    <a href="/parties/">{{party.name}}</a>
+    <a href="/parties/{{party._id}}">{{party.name}}</a>
     <p>{{party.description}}</p>
     <button ng-click="remove(party)">X</button>
+
+    <div>
+      <input type="button" value="I'm going!" ng-click="rsvp(party._id, 'yes')">
+      <input type="button" value="Maybe" ng-click="rsvp(party._id, 'maybe')">
+      <input type="button" value="No" ng-click="rsvp(party._id, 'no')">
+    </div>
+    <div>
+      Who is coming:
+      Yes - {{ (party.rsvps | filter:{rsvp:'yes'}).length }}
+      Maybe - {{ (party.rsvps | filter:{rsvp:'maybe'}).length }}
+      No - {{ (party.rsvps | filter:{rsvp:'no'}).length }}
+      <div ng-repeat="rsvp in party.rsvps | filter:{rsvp:'yes'}">
+          {{ getUserById(rsvp.user) | displayName }} - {{ rsvp.rsvp }}
+      </div>
+      <div ng-repeat="rsvp in party.rsvps | filter:{rsvp:'maybe'}">
+          {{ getUserById(rsvp.user) | displayName }} - {{ rsvp.rsvp }}
+      </div>
+      <div ng-repeat="rsvp in party.rsvps | filter:{rsvp:'no'}">
+          {{ getUserById(rsvp.user) | displayName }} - {{ rsvp.rsvp }}
+      </div>
+    </div>
+    <ul>
+      Users who not responded:
+      <li ng-repeat="invitedUser in outstandingInvitations(party)">
+          {{ invitedUser | displayName }}
+      </li>
+    </ul>
+
     <p><small>Posted by {{ creator(party) | displayName }}</small></p>
   </li>
-    <button ng-click="removeAll()">remove all</button>
-    
-  </ul>
-  page number should be here:
- <dir-pagination-controls on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
+</ul>
+<dir-pagination-controls on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>

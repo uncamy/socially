@@ -1,22 +1,27 @@
 angular.module("socially").controller("PartyDetailsCtrl", ['$scope', '$stateParams', '$meteor',
-function($scope, $stateParams, $meteor){
+  function($scope, $stateParams, $meteor){
 
-$scope.party = $meteor.object(Parties, $stateParams.partyId, false);
-$scope.save = function() {
-	$scope.party.save().then(function(numberOfDocs){
-    console.log('save success doc affected ', numberOfDocs);
-  }, function(error){
-    console.log('save error', error);
-  });
-};
+    $scope.party = $meteor.object(Parties, $stateParams.partyId);
 
-$scope.reset = function() {
- 	$scope.party.reset();
-};
-$scope.party = $meteor.object(Parties, $stateParams.partyId);
-$scope.$meteorSubscribe('parties');
+    var subscriptionHandle;
+    $meteor.subscribe('parties').then(function(handle) {
+      subscriptionHandle = handle;
+    });
 
-$scope.users = $meteor.collection(Meteor.users, false).subscribe('users');
-$scope.$meteorSubscribe('users');
+    $scope.users = $meteor.collection(Meteor.users, false).subscribe('users');
 
-}]);
+    $scope.invite = function(user){
+      $meteor.call('invite', $scope.party._id, user._id).then(
+        function(data){
+          console.log('success inviting', data);
+        },
+        function(err){
+          console.log('failed', err);
+        }
+      );
+    };
+
+    $scope.$on('$destroy', function() {
+      subscriptionHandle.stop();
+    });
+  }]);
